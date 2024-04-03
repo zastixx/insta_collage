@@ -20,7 +20,7 @@ const initialUserState: UserStateType = {
 const RequestAccess = () => {
   const [userDetails, setUserDetails] =
     useState<UserStateType>(initialUserState);
-  const [currentState, setCurrentState] = useState<number>(2);
+  const [currentState, setCurrentState] = useState<number>(1);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -29,7 +29,7 @@ const RequestAccess = () => {
 
     setUserDetails((prevState) => ({
       ...prevState,
-      [name]: value.trim(),
+      [name]: value,
     }));
   };
 
@@ -38,6 +38,7 @@ const RequestAccess = () => {
     try {
       await addDoc(collection(db, 'early-access'), userDetails)
       console.log("User details uploaded to Firebase");
+      setCurrentState(currentState + 1)
     } catch (error) {
       console.error("Error uploading user details to Firebase:", error);
     }
@@ -46,7 +47,9 @@ const RequestAccess = () => {
   return (
     <div className="text-white flex justify-center items-center h-screen font-sans">
       <div className="max-w-xl w-full">
-        <h1 className="mb-1 text-gray-400">Request early access</h1>
+        {currentState !== 3 && (
+          <h1 className="mb-1 text-gray-400">Request early access</h1>
+        )} 
         <div className="bg-[#2e2e2e] rounded-md p-4 w-full py-8">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {currentState === 1 && (
@@ -56,6 +59,7 @@ const RequestAccess = () => {
                   name="email"
                   value={userDetails.email}
                   required
+                  autoFocus
                   placeholder="Email address"
                   className="bg-transparent px-2 py-2 outline-none border-b"
                   onChange={handleInputChange}
@@ -124,6 +128,17 @@ const RequestAccess = () => {
               </>
             )}
           </form>
+            {currentState === 3 && (
+              <div className="flex max-w-md mx-auto py-12 justify-center gap-3 flex-col px-4">
+                <h1 className="font-bold text-4xl">Thank you for your interest</h1>
+                <div>
+                  your access request access has been submitted and you will be notified via email when your request is approved
+                </div>
+                <div>
+                  We appreciate your understanding and patience during the process.
+                </div>
+              </div>
+            )}
         </div>
       </div>
     </div>
